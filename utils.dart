@@ -23,10 +23,14 @@ extension StringAnalyzer on String {
       filters['min_length'] = int.parse(lengthMatch.group(1)!);
     }
 
+    final containsFirstVowel =
+        RegExp('contain the first vowel').firstMatch(query);
+
     final containsMatch =
         RegExp('containing the letter ([a-zA-Z])').firstMatch(query);
-    if (containsMatch != null) {
-      filters['contains_character'] = containsMatch.group(1);
+    if (containsMatch != null || containsFirstVowel != null) {
+      filters['contains_character'] =
+          containsFirstVowel != null ? 'a' : containsMatch!.group(1);
     }
 
     return filters.isEmpty ? null : filters;
