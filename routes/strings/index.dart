@@ -9,7 +9,17 @@ Future<Response> onRequest(RequestContext context) async {
     return _handlePost(context);
   }
 
-  if (context.request.method == HttpMethod.get) {}
+  // if (context.request.method == HttpMethod.get) {
+  //   final result = context.read<StringRepo>().getByValue(value: query);
+
+  //   return Response.json(
+  //     body: result.data,
+  //     statusCode: result.code,
+  //   );
+  // }
+
+  return Response(statusCode: 405, body: 'Method Not Allowed');
+
   //   final pathSegments = context.request.uri.pathSegments;
   //   if (pathSegments.isEmpty) {
   //     return _handleGetAll(context);
@@ -25,8 +35,6 @@ Future<Response> onRequest(RequestContext context) async {
   //     return _handleDelete(pathSegments[1]);
   //   }
   // }
-
-  return Response(statusCode: 405, body: 'Method Not Allowed');
 }
 
 Future<Response> _handlePost(RequestContext context) async {
@@ -54,17 +62,6 @@ Future<Response> _handlePost(RequestContext context) async {
     );
   }
 }
-
-// Response _handleGet(String stringValue) {
-//   final id = sha256.convert(utf8.encode(stringValue)).toString();
-//   final entry = _storage[id];
-
-//   if (entry == null) {
-//     return Response(statusCode: 404, body: 'String not found');
-//   }
-
-//   return Response.json(body: entry);
-// }
 
 // Response _handleGetAll(RequestContext context) {
 //   final queryParams = context.request.uri.queryParameters;

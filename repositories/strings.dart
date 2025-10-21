@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 
@@ -36,6 +37,17 @@ class StringRepo {
       code: 201,
       data: entry,
     );
+  }
+
+  ({dynamic data, int code}) getByValue({required String value}) {
+    final id = sha256.convert(utf8.encode(value)).toString();
+    final entry = _storage[id];
+
+    if (entry == null) {
+      return (code: 404, data: 'String does not exist in the system');
+    }
+
+    return (code: HttpStatus.ok, data: entry);
   }
 
   Map<String, dynamic> naturalLanguageFilter({
