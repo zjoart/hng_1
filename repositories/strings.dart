@@ -50,6 +50,67 @@ class StringRepo {
     return (code: HttpStatus.ok, data: entry);
   }
 
+  ({dynamic data, int code}) getAllByFilter({
+    required Map<String, String> queryParams,
+  }) {
+    final isPalindrome = bool.tryParse("${queryParams['is_palindrome']}");
+
+    final minLength = int.tryParse("${queryParams['min_length']}");
+    final maxLength = int.tryParse("${queryParams['max_length']}");
+    final wordCount = int.tryParse("${queryParams['word_count']}");
+
+    final containsCharacter = queryParams['contains_character'];
+
+    if (isPalindrome == null &&
+        minLength == null &&
+        maxLength == null &&
+        wordCount == null &&
+        containsCharacter == null) {
+      return (code: 400, data: 'Invalid query parameter values or types');
+    }
+
+    if (containsCharacter != null && containsCharacter.length > 1) {
+      return (code: 400, data: 'Invalid query parameter values or types');
+    }
+
+    final filteredData = _storage.values.where((entry) {
+      final properties = entry['properties'] as Map<String, dynamic>;
+
+      if (isPalindrome != null &&
+          (properties['is_palindrome'] as bool) != isPalindrome) {
+        return false;
+      }
+
+      if (minLength != null && (properties['length'] as int) < minLength) {
+        return false;
+      }
+
+      if (maxLength != null && (properties['length'] as int) > maxLength) {
+        return false;
+      }
+
+      if (wordCount != null && (properties['word_count'] as int) != wordCount) {
+        return false;
+      }
+
+      if (containsCharacter != null &&
+          !(entry['value'] as String).contains(containsCharacter)) {
+        return false;
+      }
+
+      return true;
+    }).toList();
+
+    return (
+      code: HttpStatus.ok,
+      data: {
+        'data': filteredData,
+        'count': filteredData.length,
+        'filters_applied': queryParams,
+      },
+    );
+  }
+
   Map<String, dynamic> naturalLanguageFilter({
     required Map<String, dynamic> filters,
     required String query,
