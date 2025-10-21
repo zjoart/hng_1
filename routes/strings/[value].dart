@@ -3,7 +3,18 @@ import 'package:dart_frog/dart_frog.dart';
 import '../../repositories/strings.dart';
 import '../../utils.dart';
 
-Future<Response> onRequest(RequestContext context, String path) async {
+Future<Response> onRequest(RequestContext context, String pathValue) async {
+  final value = Uri.decodeComponent(pathValue);
+
+  if (context.request.method == HttpMethod.delete) {
+    final result = context.read<StringRepo>().delete(value: value);
+
+    return Response.json(
+      statusCode: result.code,
+      body: result.data,
+    );
+  }
+
   if (context.request.method != HttpMethod.get) {
     return Response.json(
       statusCode: 405,
@@ -11,7 +22,7 @@ Future<Response> onRequest(RequestContext context, String path) async {
     );
   }
 
-  if (path == 'filter-by-natural-language') {
+  if (value == 'filter-by-natural-language') {
     final query = context.request.uri.queryParameters['query'];
 
     if (query == null || query.isEmpty) {
@@ -39,8 +50,7 @@ Future<Response> onRequest(RequestContext context, String path) async {
     );
   }
 
-  final result =
-      context.read<StringRepo>().getByValue(value: Uri.decodeComponent(path));
+  final result = context.read<StringRepo>().getByValue(value: value);
 
   return Response.json(
     body: result.data,

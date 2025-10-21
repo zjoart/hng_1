@@ -95,4 +95,19 @@ class StringRepo {
       },
     };
   }
+
+  ({dynamic data, int code}) delete({required String value}) {
+    final id = sha256.convert(utf8.encode(value)).toString();
+
+    if (!_storage.containsKey(id)) {
+      return (code: 404, data: 'String does not exist in the system');
+    }
+
+    _storage.remove(id);
+
+    return (
+      code: 204,
+      data: null,
+    );
+  }
 }
