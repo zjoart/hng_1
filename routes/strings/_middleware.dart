@@ -5,8 +5,6 @@ import '../../repositories/strings.dart';
 final _repo = StringRepo();
 
 Handler middleware(Handler handler) {
-  print('Storage:${_repo.storage.length}');
-
   return handler.use(requestLogger()).use(factRepo());
 }
 
